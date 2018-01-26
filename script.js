@@ -76,20 +76,27 @@ async function priceChecker ( stopAtPercentage ) {
     let trade = await getTrade();
 
     return {
+        getProfit () {
+            if ( !lastPrice ) { return 0; }
+
+            // lastPrice - trade.price
+            return ( lastPrice * 100 / trade.price ) - 100;
+        },
 
         /**
          * @param { { date: number, open: number, close: number, high: number, low: number, marketCap: number, volume: number } } candle
          */
-
         shouldSell ( candle ) {
             let sell = false;
 
+            // bullish, do nothing
             if ( lastPrice === undefined || candle.close > trade.price ) { 
                 return false; 
             }
             
+            // bear signal
             if ( candle.close <= lastPrice ) {
-                var diff = 100 - ( lastPrice * 100 ) / lastPrice;
+                var diff = 100 - ( candle.close * 100 ) / lastPrice;
                 
                 if ( diff >= stopAtPercentage ) {
                     sell = true;
@@ -113,8 +120,12 @@ function run () {
 
         if ( !(!!closePrice) ) { return; }
 
+        // @TODO Implement sell
         if ( pc.shouldSell( closePrice ) ) {
-            // @TODO Implement sell
+            console.log( `Selling at $${ closePrice }` );
+        }  else {
+            console.log( `Close price: $${ closePrice }, actual profit: $${ pc.getProfit }` );
         }
+
     }, 1000 );
 }
