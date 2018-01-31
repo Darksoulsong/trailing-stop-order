@@ -1,28 +1,16 @@
-function request( url ) {
+import { clearInterval } from 'timers';
 
+const rp = require( 'request-promise' );
+const fs = require( 'fs' );
+
+function request ( url ) {
     return new Promise( function ( resolve, reject ) {
-
-        const xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = function(e) {
-
-            if (xhr.readyState === 4) {
-
-                if (xhr.status === 200) {
-                   resolve( xhr.response );
-                } else {
-                    reject(xhr.status);
-                }
+        fs.readFile( url, ( err, data ) => {
+            if ( err ) {
+                reject( err ); 
             }
-        };
-
-        xhr.ontimeout = function () {
-            reject('timeout');
-        };
-
-        xhr.open( 'get', url, true );
-
-        xhr.send();
+            resolve( JSON.parse( data ) );
+        });
     });
 }
 
@@ -34,7 +22,7 @@ function getTrade () {
 
             resolve({
 
-                price: '1265.99'
+                price: 5760.8
 
             });
 
@@ -45,87 +33,115 @@ function getTrade () {
 
 async function listHistoricalData () {
 
-    const historicalData = await request( './BTC-historical-data.json' );
+    let historicalData = await request( 'btc-historical-data.json' );
 
-    return JSON.parse( historicalData );
+    historicalData.sort( (a, b) => {
+        return a.date - b.date;
+    });
+
+
+    return historicalData;
 }
 
 function ticker () {
 
     let idx = 0;
-    const data = listHistoricalData();
+    let data;
 
     return {
+        async get () {
+            data = data || await listHistoricalData();
 
-        get () {
-
-            var tick = data[ idx ];
+            const tick = data[ idx ];
 
             idx++;
 
             return tick;
-
         }
-
     };
 } 
 
-async function priceChecker ( stopAtPercentage ) {
+/**
+ * @param {{price: number}} trade 
+ * @param {number} stopAtPercentage 
+ */
+function priceChecker ( trade, stopAtPercentage ) {
 
-    let lastPrice;
-    let trade = await getTrade();
+    var lastPrice = null;   
 
     return {
-        getProfit () {
+        /**
+         * @param {number} tick 
+         */
+        getProfitPercent ( tick ) {
             if ( !lastPrice ) { return 0; }
 
-            // lastPrice - trade.price
-            return ( lastPrice * 100 / trade.price ) - 100;
+            const value = lastPrice * 100 / trade.price;
+
+            return value.toFixed( 2 ) + '%';
         },
 
         /**
-         * @param { { date: number, open: number, close: number, high: number, low: number, marketCap: number, volume: number } } candle
+         * @param { number } close
          */
-        shouldSell ( candle ) {
+        shouldSell ( close ) {
             let sell = false;
 
             // bullish, do nothing
-            if ( lastPrice === undefined || candle.close > trade.price ) { 
+            if ( !lastPrice || close >= trade.price ) { 
                 return false; 
             }
             
             // bear signal
-            if ( candle.close <= lastPrice ) {
-                var diff = 100 - ( candle.close * 100 ) / lastPrice;
+            if ( close <= lastPrice ) {
+                var diff = 100 - ( close * 100 / lastPrice );
                 
                 if ( diff >= stopAtPercentage ) {
                     sell = true;
                 }
             }
 
-            lastPrice = candle.close;
-
             return sell;
+        }, 
+        
+        /**
+         * @param { number } price
+         */
+        setLastPrice ( price ) {
+            lastPrice = price;
         }
     };
 }
 
-function run () {
-    const data = listHistoricalData();
+async function run () {
+    const data = await listHistoricalData();
     const tk = ticker();
-    const pc = priceChecker( 5 );
-    
-    var timer = setTimeout( function () {
-        let closePrice = tk.get();
+    const trade = await getTrade();
+    const pc = priceChecker( trade, 5 );
 
-        if ( !(!!closePrice) ) { return; }
+    async function get () {
+        let tick = await tk.get();
 
+        
+        if ( !tick || !(!!tick.close) ) {
+
+            if ( !tick ) {
+                clearInterval( timer );
+            }
+            return; 
+        }
+        
         // @TODO Implement sell
-        if ( pc.shouldSell( closePrice ) ) {
-            console.log( `Selling at $${ closePrice }` );
-        }  else {
-            console.log( `Close price: $${ closePrice }, actual profit: $${ pc.getProfit }` );
+        if ( pc.shouldSell( tick.close ) ) {
+            console.log( `Selling at $${ tick.close }` );
+        } else {
+            console.log( `Close price: $${ tick.close }, actual profit: $${ pc.getProfitPercent( tick.close ) }` );
         }
 
-    }, 1000 );
+        pc.setLastPrice( tick.close );
+    }
+
+    const timer = setInterval( get , 1000 );
 }
+
+run();

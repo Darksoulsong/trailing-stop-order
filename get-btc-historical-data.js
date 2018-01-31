@@ -36,7 +36,6 @@ for ( let $row of $table.rows ) {
     };
 
     data.push( candle );
-    
 }
 
 // console.table( data );
