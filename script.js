@@ -1,5 +1,3 @@
-import { clearInterval } from 'timers';
-
 const rp = require( 'request-promise' );
 const fs = require( 'fs' );
 
@@ -67,34 +65,46 @@ function ticker () {
  */
 function priceChecker ( trade, stopAtPercentage ) {
 
-    var lastPrice = null;   
+    const pricesHistory = [];
+    let lastPrice = null;       
 
     return {
         /**
-         * @param {number} tick 
+         * @param {string} tick 
          */
-        getProfitPercent ( tick ) {
+        getEvaluationPercent ( tick ) {
             if ( !lastPrice ) { return 0; }
 
-            const value = lastPrice * 100 / trade.price;
+            const value = (tick * 100 / trade.price) - 100;
+            const perc = value.toFixed( 2 ) + '%';
 
-            return value.toFixed( 2 ) + '%';
+            return perc;
+        },
+
+        /**
+         * @returns {string}
+         */
+        getEvaluation () {
+            return  (lastPrice - trade.price).toFixed();
         },
 
         /**
          * @param { number } close
+         * @returns {boolean}
          */
         shouldSell ( close ) {
             let sell = false;
 
             // bullish, do nothing
-            if ( !lastPrice || close >= trade.price ) { 
+            if ( !lastPrice /*|| close >= trade.price*/ ) { 
                 return false; 
             }
+
+            const highestPrice = Math.max.apply( Math, pricesHistory );
             
             // bear signal
-            if ( close <= lastPrice ) {
-                var diff = 100 - ( close * 100 / lastPrice );
+            if ( close < highestPrice ) {
+                var diff = 100 - ( close * 100 / highestPrice );
                 
                 if ( diff >= stopAtPercentage ) {
                     sell = true;
@@ -109,6 +119,7 @@ function priceChecker ( trade, stopAtPercentage ) {
          */
         setLastPrice ( price ) {
             lastPrice = price;
+            pricesHistory.push( price );
         }
     };
 }
@@ -133,9 +144,16 @@ async function run () {
         
         // @TODO Implement sell
         if ( pc.shouldSell( tick.close ) ) {
-            console.log( `Selling at $${ tick.close }` );
+            const evaluationPercent = pc.getEvaluationPercent( tick.close );
+            console.log(
+`Script terminated. Details:
+- Acquired asset at $${ trade.price }
+- Sold asset at $${ tick.close }
+- Valuation of $${ pc.getEvaluation() }, a total of $${ evaluationPercent }.`
+            );
+            clearInterval( timer );
         } else {
-            console.log( `Close price: $${ tick.close }, actual profit: $${ pc.getProfitPercent( tick.close ) }` );
+            console.log( `Close price: $${ tick.close }, actual profit: $${ pc.getEvaluationPercent( tick.close ) }` );
         }
 
         pc.setLastPrice( tick.close );
@@ -145,3 +163,8 @@ async function run () {
 }
 
 run();
+
+// @TODO: Move functions into separated modules
+// @TODO: Create reporter
+// @TODO: Implement some API
+// @TODO: Implement selling for testing
