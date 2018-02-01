@@ -1,0 +1,29 @@
+{
+  "name": "trailing-stop-order",
+  "version": "0.0.1",
+  "description": "Implements a trailing stop order for cryptocurrencies",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Darksoulsong/trailing-stop-order.git"
+  },
+  "keywords": [
+    "crypto",
+    "trailing",
+    "stop",
+    "order"
+  ],
+  "author": "Thyago Weber <thyago.weber@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Darksoulsong/trailing-stop-order/issues"
+  },
+  "homepage": "https://github.com/Darksoulsong/trailing-stop-order#readme",
+  "dependencies": {
+    "node-binance-api": "^0.4.7",
+    "request-promise": "^4.2.2"
+  }
+}

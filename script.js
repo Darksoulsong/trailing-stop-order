@@ -13,47 +13,32 @@ function request ( url ) {
 }
 
 function getTrade () {
-
     return new Promise( function ( resolve, reject ) {
-
         setTimeout( function () {
-
-            resolve({
-
-                price: 5760.8
-
-            });
-
+            resolve({ price: 5760.8 });
         }, 200);
-
     });
 }
 
 async function listHistoricalData () {
-
     let historicalData = await request( 'btc-historical-data.json' );
 
     historicalData.sort( (a, b) => {
         return a.date - b.date;
     });
 
-
     return historicalData;
 }
 
 function ticker () {
-
     let idx = 0;
     let data;
 
     return {
         async get () {
             data = data || await listHistoricalData();
-
             const tick = data[ idx ];
-
             idx++;
-
             return tick;
         }
     };
@@ -132,10 +117,8 @@ async function run () {
 
     async function get () {
         let tick = await tk.get();
-
         
-        if ( !tick || !(!!tick.close) ) {
-
+        if ( !tick || !( !!tick.close ) ) {
             if ( !tick ) {
                 clearInterval( timer );
             }
@@ -145,6 +128,7 @@ async function run () {
         // @TODO Implement sell
         if ( pc.shouldSell( tick.close ) ) {
             const evaluationPercent = pc.getEvaluationPercent( tick.close );
+
             console.log(
 `Script terminated. Details:
 - Acquired asset at $${ trade.price }
