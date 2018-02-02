@@ -21,7 +21,7 @@ class PriceChecker {
     /**
      * @param {string} tick 
      */
-    getEvaluationPercent ( tick ) {
+    getAppreciationPercent ( tick ) {
         if ( !this.lastPrice ) { return 0; }
 
         const value = (tick * 100 / this.trade.price) - 100;
@@ -31,7 +31,7 @@ class PriceChecker {
     /**
      * @returns {string}
      */
-    getEvaluation () {
+    getAppreciation () {
         return  (this.lastPrice - this.trade.price).toFixed( 2 );
     }
 

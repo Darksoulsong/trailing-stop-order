@@ -1,6 +1,8 @@
 const format = require( 'date-fns/format' );
 const config = require( './sources/config' ).binance;
 const Trader = require( './sources/trader' );
+const eventAggregator = require( './sources/event-aggregator' ).getInstance();
+const reporter = require( './sources/reporter' ).getInstance();
 const binance = require( 'node-binance-api' );
 const PriceChecker = require( './sources/price-checker' );
 
@@ -24,11 +26,12 @@ class BinanceWrapper {
             callback( balances[ this.currency ] );
         });
     }
-    
+
     placeTrailingStopOrder ( lossLimitPercent, trade ) {
         const priceChecker = new PriceChecker( trade, 5 );
 
-        this.tickerFnParams.push( ( candlesticks ) => {
+        function onTick ( candlesticks ) {
+            
             let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
             let { o:open, h:high, l:low, c:close, v:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
             let date = format( new Date( eventTime ), "D/MM/YYYY - HH:mm:ss" );
@@ -36,31 +39,47 @@ class BinanceWrapper {
             close = +close;
 
             if ( priceChecker.shouldSell( close ) ) {
-                const evaluationPercent = priceChecker.getEvaluationPercent( close );
+                const appreciationPercent = priceChecker.getAppreciationPercent( close );
+                const appreciation = priceChecker.getAppreciation();
 
-                console.log(
-`${date} - Script terminated. Details:
-- Acquired asset at $${ trade.price }
-- Sold asset at $${ close }
-- Valuation of $${ priceChecker.getEvaluation() }, a total of $${ evaluationPercent }.`
-                );
-
+                eventAggregator.publish( 'onTickReportSell', { close, date, appreciation, appreciationPercent } );
             } else {
-                console.log( `${ date } - Close price: $${ close }, actual profit: $${ priceChecker.getEvaluationPercent( close ) }` );
+                eventAggregator.publish( 'onTickReportAppreciation', { close, date, appreciation, appreciationPercent } );
             }
 
             priceChecker.setLastPrice( close );
-        });
+        }
+
+        this.tickerFnParams.push( onTick );
 
         this.tickerFn.apply( this.tickerFn, this.tickerFnParams );
     }
 }
 
-function run () {
-    const trade = { price: 0.051397 };
-    const binanceWrapper = new BinanceWrapper( 'DASHBTC' );
+/**
+ * @param {number} buyPrice
+ * @param {string} pair
+ */
+module.exports = function run ( buyPrice, pair ) {
+    const trade = { price: buyPrice };
+    const binanceWrapper = new BinanceWrapper( pair );
+    
+    /**
+     * @param {{close: number, date: string, appreciation: number, appreciationPercent: string }} params 
+     */
+    function onTickReportSell ( params ) {
+        reporter.report( 'sell', params );
+    }
+
+    /**
+     * @param {{close: number, date: string, appreciation: number, appreciationPercent: string }} params 
+     */
+    function onTickReportAppreciation ( params ) {
+        reporter.report( 'appreciation', params );
+    }
+
+    eventAggregator.subscribe( 'onTickReportSell', onTickReportSell );
+    eventAggregator.subscribe( 'onTickReportAppreciation', onTickReportAppreciation );
 
     binanceWrapper.placeTrailingStopOrder( 5, trade );
-}
-
-run();
+};
