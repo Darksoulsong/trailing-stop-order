@@ -1,3 +1,4 @@
+const format = require( 'date-fns/format' );
 const config = require( './sources/config' ).binance;
 const Trader = require( './sources/trader' );
 const binance = require( 'node-binance-api' );
@@ -30,19 +31,22 @@ class BinanceWrapper {
         this.tickerFnParams.push( ( candlesticks ) => {
             let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
             let { o:open, h:high, l:low, c:close, v:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
+            let date = format( new Date( eventTime ), "D/MM/YYYY - HH:mm:ss" );
+
+            close = +close;
 
             if ( priceChecker.shouldSell( close ) ) {
                 const evaluationPercent = priceChecker.getEvaluationPercent( close );
 
                 console.log(
-`Script terminated. Details:
+`${date} - Script terminated. Details:
 - Acquired asset at $${ trade.price }
 - Sold asset at $${ close }
 - Valuation of $${ priceChecker.getEvaluation() }, a total of $${ evaluationPercent }.`
                 );
 
             } else {
-                console.log( `Close price: $${ close }, actual profit: $${ priceChecker.getEvaluationPercent( close ) }` );
+                console.log( `${ date } - Close price: $${ close }, actual profit: $${ priceChecker.getEvaluationPercent( close ) }` );
             }
 
             priceChecker.setLastPrice( close );

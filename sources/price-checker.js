@@ -36,7 +36,7 @@ class PriceChecker {
     }
 
     /**
-     * @param { number } close
+     * @param {number} close
      * @returns {boolean}
      */
     shouldSell ( close ) {
@@ -61,11 +61,14 @@ class PriceChecker {
     }
 
     /**
-     * @param { number } price
+     * @param {number} price
      */
     setLastPrice ( price ) {
         this.lastPrice = price;
-        this.pricesHistory.push( price );
+        
+        if ( this.pricesHistory.indexOf( price ) !== 1  ) {
+            this.pricesHistory.push( price );
+        }
     }
 }
 

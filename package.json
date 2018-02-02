@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Darksoulsong/trailing-stop-order#readme",
   "dependencies": {
+    "date-fns": "^1.29.0",
     "node-binance-api": "^0.4.7",
     "request-promise": "^4.2.2"
   }
