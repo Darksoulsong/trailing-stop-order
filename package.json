@@ -4,6 +4,7 @@
   "description": "Implements a trailing stop order for cryptocurrencies",
   "main": "script.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,7 +25,9 @@
   "homepage": "https://github.com/Darksoulsong/trailing-stop-order#readme",
   "dependencies": {
     "date-fns": "^1.29.0",
+    "minimist": "^1.2.0",
     "node-binance-api": "^0.4.7",
+    "pushbullet": "^2.1.0",
     "request-promise": "^4.2.2"
   }
 }

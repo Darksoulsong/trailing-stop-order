@@ -1,5 +1,15 @@
+const config  = require( './../config' );
+const PushBullet = require( 'pushbullet' );
+
 class Reporter {
-    constructor () {}
+    constructor () {
+        this.preparePushBullet();
+    }
+
+    preparePushBullet () {
+        this.pushBulletPusher = new PushBullet( config.reporter.pushBullet.APIKEY );
+        this.pushBulletDevice = config.reporter.pushBullet.deviceIden;
+    }
 
     /**
      * @param {string} type 
@@ -20,12 +30,18 @@ class Reporter {
      * @param {{close: number, appreciation: number, appreciationPercent: string, date: string}} params 
      */
     sellReport ( params ) {
-        console.log(
-`${ params.date } - Script terminated. Details:
-- Acquired asset at $${ trade.price }
+        const msg = `${ params.date } - Script terminated. Details:
+- Acquired asset at $${ params.tradePrice }
 - Sold asset at $${ params.close }
-- Appreciation of $${ params.appreciation }, a total of $${ params.appreciationPercent }.`
-        );
+- Appreciation of $${ params.appreciation }, a total of $${ params.appreciationPercent }.`;
+
+        console.log( msg );
+
+        this.pushBulletPusher.note( this.pushBulletDevice, "Trailing stop order fulfilled", msg, ( error, response ) => {
+            if ( error ) {
+                console.error( `An error has occurred on trying to push a note to PushBullet. Details: ${ error }` );
+            }
+        });
     }
 }
 
@@ -35,7 +51,7 @@ module.exports = {
      * @returns {Reporter}
      */
     getInstance () {
-        instance = instance || new EventAggregator();
+        instance = instance || new Reporter();
         return instance;
     }
 };

@@ -5,13 +5,13 @@ class PriceChecker {
      * @param {number} stopAtPercentage 
      */
     constructor ( trade, stopAtPercentage ) {
-        /** @type { number[] } */
-        this.pricesHistory = [];
+        /** @type { Set<number> } */
+        this.pricesHistory = new Set();
 
         /** @type { number } */
         this.lastPrice = null;
 
-        /** @type { number[] } */
+        /** @type { { price: number } } */
         this.trade = trade;
 
         /** @type { number } */
@@ -23,33 +23,53 @@ class PriceChecker {
      */
     getAppreciationPercent ( tick ) {
         if ( !this.lastPrice ) { return 0; }
+        
+        // let value = (tick * 100 / this.trade.price);
+        // let subtractValue = value >= 100 ? 100 : (function () { return +value.toString().split( '.' )[ 0 ]; })();
 
-        const value = (tick * 100 / this.trade.price) - 100;
+        // value = value - subtractValue;
+        let value = this._calculateAppreciation( tick );
         return value.toFixed( 2 ) + '%';
+    }
+
+    /**
+     * @param {number} value 
+     */
+    _calculateAppreciation ( value ) {
+        /**
+         * 
+         */
+        return ((value - this.trade.price) / this.trade.price) * 100;
     }
 
     /**
      * @returns {string}
      */
     getAppreciation () {
-        return  (this.lastPrice - this.trade.price).toFixed( 2 );
+        let appr = this._calculateAppreciation( this.lastPrice );
+        appr = appr.toFixed( 8 );
+        return  appr;
     }
 
     /**
+     * Checks if an asset can be sold, by identifying a bear signal
+     * Conditions for selling:
+     * - The close value must be higher (and never lower) than the trade price, in order to prevent losses
+     * - The percent difference among the close price and the highest price must be higher then the tolerance percentage (stopAtPercentage)
      * @param {number} close
      * @returns {boolean}
      */
     shouldSell ( close ) {
         let goShort = false;
 
-        if ( !this.lastPrice ) { 
-            return false; 
+        if ( !this.lastPrice || close <= this.trade.price ) { 
+            return goShort; 
         }
 
-        const highestPrice = Math.max.apply( Math, this.pricesHistory );
+        const highestPrice = Math.max.apply( Math, Array.from( this.pricesHistory ) );
         
         // bear signal
-        if ( close < highestPrice ) {
+        if ( close < highestPrice) {
             let diff = 100 - ( close * 100 / highestPrice );
 
             if ( diff >= this.stopAtPercentage ) {
@@ -66,8 +86,8 @@ class PriceChecker {
     setLastPrice ( price ) {
         this.lastPrice = price;
         
-        if ( this.pricesHistory.indexOf( price ) !== 1  ) {
-            this.pricesHistory.push( price );
+        if ( !this.pricesHistory.has( price ) ) {
+            this.pricesHistory.add( price );
         }
     }
 }
