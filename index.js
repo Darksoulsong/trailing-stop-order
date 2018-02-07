@@ -1,6 +1,3 @@
-// @TODO: Get buy price buy cmd param --done
-// @TODO: Get pair by cmd param --done
-// @TODO: Get interval by cmd param --done
 // @TODO: Create reporter
 // - PushBullet --done.
 // - Email
@@ -14,12 +11,9 @@ const lossTolerance = argv.t;
 const buyPrice = argv.b;
 const interval = argv.i;
 
-if ( buyPrice === undefined || !pair || ! lossTolerance ) {
+if ( buyPrice === undefined || !pair || !lossTolerance ) {
     console.error( `Either -b (buy price) or -p (pair) or -t (lossTolerance) parameter is undefined` );
     return;
 }
 
-// main( 0.051397, 'DASHBTC' );
-// main( 0.068496, 'DASHBTC', 1 );
-// main( 0.068408, 'DASHBTC', 0.1 );
 start( buyPrice, pair, lossTolerance, interval );

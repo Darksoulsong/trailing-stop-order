@@ -1,4 +1,5 @@
-const config  = require( './../config' );
+const config = require( './../config' );
+const logger = require( './logger' );
 const PushBullet = require( 'pushbullet' );
 
 class Reporter {
@@ -23,7 +24,8 @@ class Reporter {
      * @param {{close: number, appreciation: number, appreciationPercent: string, date: string}} params 
      */
     appreciationReport ( params ) {
-        console.log( `${ params.date } - Close price: $${ params.close }, appreciation: $${ params.appreciationPercent }` );
+        // console.log( `${ params.date } - Close price: $${ params.close }, appreciation: $${ params.appreciationPercent }` );
+        logger.info( `${ params.date } - Close price: $${ params.close }, appreciation: $${ params.appreciationPercent }` );
     }
 
     /**
@@ -35,7 +37,8 @@ class Reporter {
 - Sold asset at $${ params.close }
 - Appreciation of $${ params.appreciation }, a total of $${ params.appreciationPercent }.`;
 
-        console.log( msg );
+        // console.log( msg );
+        logger.success( msg );
 
         this.pushBulletPusher.note( this.pushBulletDevice, "Trailing stop order fulfilled", msg, ( error, response ) => {
             if ( error ) {
