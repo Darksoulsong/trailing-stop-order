@@ -1,3 +1,6 @@
+// @TODO: Integrate forever and make it optional
+// @TODO: Create param checking
+// @TODO: Create option to place multiple TSOs
 // @TODO: Create reporter
 // - PushBullet --done.
 // - Email
@@ -12,7 +15,7 @@ const buyPrice = argv.b;
 const interval = argv.i;
 
 if ( buyPrice === undefined || !pair || !lossTolerance ) {
-    console.error( `Either -b (buy price) or -p (pair) or -t (lossTolerance) parameter is undefined` );
+    throw new Error( `Either -b (buy price) or -p (pair) or -t (lossTolerance) parameter is undefined` );
     return;
 }
 

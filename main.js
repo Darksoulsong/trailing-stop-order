@@ -1,62 +1,8 @@
 const format = require( 'date-fns/format' );
-const config = require( './config' ).binance;
-const Trader = require( './sources/trader' );
 const eventAggregator = require( './sources/event-aggregator' ).getInstance();
 const reporter = require( './sources/reporter' ).getInstance();
-const binance = require( 'node-binance-api' );
-const PriceChecker = require( './sources/price-checker' );
+const BinanceWrapper = require( './sources/wrappers/binance-wrapper' );
 
-class BinanceWrapper {
-    /**
-     * @param {string} pair 
-     * @param {string} interval 
-     */
-    constructor ( pair, interval ) {
-        this.currency = pair;
-        this.tickerFn = binance.websockets.candlesticks;
-        this.tickerFnParams = [ [ pair ], interval ];
-
-        binance.options( config );
-    }
-
-    getBalances ( callback ) {
-        binance.balance( (error, balances) => {
-            if ( error ) {
-                throw new Error( error );
-            }
-            callback( balances[ this.currency ] );
-        });
-    }
-
-    placeTrailingStopOrder ( lossLimitPercent, trade ) {
-        const priceChecker = new PriceChecker( trade, lossLimitPercent );
-
-        function onTick ( candlesticks ) {
-            
-            let { e:eventType, E:eventTime, s:symbol, k:ticks } = candlesticks;
-            let { o:open, h:high, l:low, c:close, v:volume, n:trades, i:interval, x:isFinal, q:quoteVolume, V:buyVolume, Q:quoteBuyVolume } = ticks;
-            let date = format( new Date( eventTime ), "D/MM/YYYY - HH:mm:ss" );
-            
-            close = +close;
-
-            const appreciation = priceChecker.getAppreciation();
-            const appreciationPercent = priceChecker.getAppreciationPercent( close );
-
-            priceChecker.setLastPrice( close );
-
-            if ( priceChecker.shouldSell( close ) ) {
-                const terminateConnection = true;
-                eventAggregator.publish( 'onTickReportSell', { close, date, appreciation, appreciationPercent, terminateConnection } );
-            } else {
-                eventAggregator.publish( 'onTickReportAppreciation', { close, date, appreciation, appreciationPercent } );
-            }
-        }
-
-        this.tickerFnParams.push( onTick );
-
-        this.tickerFn.apply( this.tickerFn, this.tickerFnParams );
-    }
-}
 
 /**
  * @param {number} buyPrice The price the asset was bought
@@ -73,16 +19,12 @@ module.exports = function start ( buyPrice, pair, maximumDepreciationTolerance, 
      */
     function onTickReportSell ( params ) {
         params.tradePrice = trade.price;
+        params.pair = pair;
 
         reporter.report( 'sell', params );
 
         if ( params.terminateConnection ) {
-            let endpoints = binance.websockets.subscriptions();
-
-            for ( let endpoint in endpoints ) {
-                console.log( endpoint );
-                binance.websockets.terminate( endpoint );
-            }
+            binanceWrapper.terminateConnection();
         }
     }
 

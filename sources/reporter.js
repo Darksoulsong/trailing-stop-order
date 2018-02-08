@@ -29,10 +29,11 @@ class Reporter {
     }
 
     /**
-     * @param {{close: number, appreciation: number, appreciationPercent: string, date: string}} params 
+     * @param {{close: number, appreciation: number, appreciationPercent: string, date: string, tradePrice: number, pair: string}} params 
      */
     sellReport ( params ) {
-        const msg = `${ params.date } - Script terminated. Details:
+        const msg = `${ params.date }: 
+Your position in ${ pair } has been exited. Details:
 - Acquired asset at $${ params.tradePrice }
 - Sold asset at $${ params.close }
 - Appreciation of $${ params.appreciation }, a total of $${ params.appreciationPercent }.`;
