@@ -1,5 +1,12 @@
 # trailing-stop-order
-A JS implementation to a trailing stop order for Binance Exchange. This is a work in progress.
+A Javascript implementation to a trailing stop order for Binance Exchange. This is a work in progress.
+
+## Installation
+- Clone this repo and run `npm install`. It will download all the dependencies.
+
+## Setting up
+- Visit your Binance account and generate an API key.
+- Add a `./config.js` file and configure it using the `./config.sample.js` as example.
 
 ## Running it: 
     - Single

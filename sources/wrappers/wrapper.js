@@ -10,6 +10,8 @@ class Wrapper {
 
         /** @type {string[]} */
         this.pairs = null;
+
+        this.subscriptions = null;
     }
 
     /**
@@ -83,7 +85,7 @@ class Wrapper {
 
         this.tickerFnParams.push( onTick );
 
-        this.tickerFn.apply( this.tickerFn, this.tickerFnParams );
+        this.subscriptions = this.tickerFn.apply( this.tickerFn, this.tickerFnParams );
     }
 }
 

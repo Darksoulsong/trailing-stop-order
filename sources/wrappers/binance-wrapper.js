@@ -33,7 +33,7 @@ class BinanceWrapper extends Wrapper {
 
         let endpoints = binance.websockets.subscriptions();
 
-        for ( let endpoint in endpoints ) {            
+        for ( let endpoint in endpoints ) {
             binance.websockets.terminate( endpoint );            
         }
 

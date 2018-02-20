@@ -18,6 +18,9 @@ class Reporter {
     preparePushBullet () {
         this.pushBulletPusher = new PushBullet( config.reporter.pushBullet.APIKEY );
         this.pushBulletDevice = config.reporter.pushBullet.deviceIden;
+        // this.pushBulletPusher.devices(function (err, resp) { 
+        //     console.log( resp.devices );
+        // });
     }
 
     /**

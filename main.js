@@ -26,7 +26,7 @@ function onTickReportAppreciation ( params ) {
 }
 
 /**
- * @param { {pair: string, buyPrice: number, lossTolerance: number}[] } params 
+ * @param {{ pair: string, buyPrice: number, lossTolerance: number }[]} params 
  */
 function getPairs ( params ) {
     return params.map( ( item ) => {
@@ -35,7 +35,7 @@ function getPairs ( params ) {
 }
 
 /**
- * @param { {pair: string, buyPrice: number, lossTolerance: number}[] } params 
+ * @param {{ pair: string, buyPrice: number, lossTolerance: number }[]} params 
  * @returns { {pair: string}[] }
  */
 function getParams ( params ) {
@@ -51,21 +51,11 @@ function getParams ( params ) {
     return obj;
 }
 
-// /**
-//  * @param {string} pairs Crypto or FIAT pair, for example, DASHUSD, DASHBTC, ETHUSD and so on
-//  * @param {number} maximumDepreciationTolerance Maximum depreciation in percent
-//  * @param {string} interval The candle interval. Possible values: 1m,3m,5m,15m,30m,1h,2h,4h,6h,8h,12h,1d,3d,1w,1M
-//  */
-// module.exports = function start (pairs, maximumDepreciationTolerance, interval='1m' ) {
-
 /**
  * @param {string} interval
- * @param { {pair: string, buyPrice: number, lossTolerance: number}[] } params 
+ * @param {{ pair: string, buyPrice: number, lossTolerance: number }[]} params 
  */
 module.exports = function start ( interval, params ) {
-    // @TODO: handle the params
-    // maximumDepreciationTolerance = params.lossTolerance;
-    
     binanceWrapper = new BinanceWrapper( getPairs( params ), interval );
 
     eventAggregator.subscribe( 'onTickReportSell', onTickReportSell );

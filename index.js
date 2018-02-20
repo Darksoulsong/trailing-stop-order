@@ -3,6 +3,7 @@
 // @TODO: Create option to place multiple TSOs
 // - pass multiple pairs --done
 // - pass multiple buyPrices --done
+// @TODO: Check if multiple websocket connections can be stablished at same time.
 // @TODO: Create reporter
 // - PushBullet --done.
 // - Email
