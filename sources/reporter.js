@@ -1,9 +1,17 @@
 const config = require( './../config' );
 const logger = require( './logger' );
 const PushBullet = require( 'pushbullet' );
+const handlebars = require( 'handlebars' );
+const fs = require( 'fs' );
 
 class Reporter {
     constructor () {
+        /** @type {string} */
+        this.successTplSource = null;
+
+        /** @type {string} */
+        this.logTplSource = null;
+
         this.preparePushBullet();
     }
 
@@ -16,36 +24,91 @@ class Reporter {
      * @param {string} type 
      * @param {{close: number, appreciation: number, appreciationPercent: string, date: string}} data 
      */
-    report ( type, data ) {
-        this[ `${type}Report` ]( data );
+    async report ( type, data ) {
+        return await this[ `${type}Report` ]( data );
     }
 
     /**
-     * @param {{close: number, appreciation: number, appreciationPercent: string, date: string}} params 
+     * @param {{close: number, appreciation: number, appreciationPercent: string, date: string, differenceFromHighestPrice: number}} params 
      */
     appreciationReport ( params ) {
-        // console.log( `${ params.date } - Close price: $${ params.close }, appreciation: $${ params.appreciationPercent }` );
-        logger.info( `${ params.date } - Close price: $${ params.close }, appreciation: $${ params.appreciationPercent }` );
+        let template;
+        let msg;
+
+        let compile = ( error, source ) => {
+            if ( error ) {
+                throw new Error( error );
+            }
+
+            this.logTplSource = source;
+
+            let template = handlebars.compile( source );
+            let msg = template( params );
+
+            logger.info( msg );
+        };
+
+        return new Promise( (resolve, reject ) => {
+
+            if ( this.logTplSource ) {
+                compile( null, this.logTplSource, resolve );
+            } else {
+                fs.readFile( './sources/templates/report-appreciation.tpl.html', 'utf-8', ( err, src ) => {
+                    compile( err, src, resolve );
+                });
+            }
+
+        });
+
     }
 
     /**
-     * @param {{close: number, appreciation: number, appreciationPercent: string, date: string, tradePrice: number, pair: string}} params 
+     * @param {{close: number, appreciation: number, appreciationPercent: string, date: string, tradePrice: number, pair: string, differenceFromHighestPrice: number}} params 
      */
     sellReport ( params ) {
-        const msg = `${ params.date }: 
-Your position in ${ pair } has been exited. Details:
-- Acquired asset at $${ params.tradePrice }
-- Sold asset at $${ params.close }
-- Appreciation of $${ params.appreciation }, a total of $${ params.appreciationPercent }.`;
+        let msg;
+        let template;        
 
-        // console.log( msg );
-        logger.success( msg );
+        /**
+         * @param {*} error 
+         * @param {string} source 
+         */
+        let compile = ( error, source, resolve, reject ) => {
 
-        this.pushBulletPusher.note( this.pushBulletDevice, "Trailing stop order fulfilled", msg, ( error, response ) => {
             if ( error ) {
-                console.error( `An error has occurred on trying to push a note to PushBullet. Details: ${ error }` );
+                throw new Error( error );
+            }
+
+            template = handlebars.compile( source );
+            msg = template( params );
+
+            logger.success( msg );
+
+            this.pushBulletPusher.note( this.pushBulletDevice, "Trailing stop order fulfilled", msg, ( error, response ) => {
+                if ( error ) {
+                    let errorMsg = `An error has occurred on trying to push a note to PushBullet. Details: ${ error }`;
+                    logger.error( errorMsg );
+
+                    if ( reject ) { reject( errorMsg ); }
+                }
+            });
+
+            this.successTplSource = source;
+
+            if ( resolve )  { resolve(); }
+        };
+
+        return new Promise( ( resolve, reject ) => {
+
+            if ( this.successTplSource ) {
+                compile( null, this.successTplSource, resolve, reject );
+            } else {
+                fs.readFile( './sources/templates/report-success.tpl.html', 'utf-8', ( err, src ) => {
+                    compile( err, src, resolve, reject );
+                });
             }
         });
+
     }
 }
 

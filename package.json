@@ -27,8 +27,9 @@
   "dependencies": {
     "date-fns": "^1.29.0",
     "forever-monitor": "^1.7.1",
+    "handlebars": "^4.0.11",
     "minimist": "^1.2.0",
-    "node-binance-api": "^0.4.7",
+    "node-binance-api": "^0.4.17",
     "pushbullet": "^2.1.0",
     "request-promise": "^4.2.2",
     "winston": "^2.4.0",

@@ -24,10 +24,6 @@ class PriceChecker {
     getAppreciationPercent ( tick ) {
         if ( !this.lastPrice ) { return 0; }
         
-        // let value = (tick * 100 / this.trade.price);
-        // let subtractValue = value >= 100 ? 100 : (function () { return +value.toString().split( '.' )[ 0 ]; })();
-
-        // value = value - subtractValue;
         let value = this._calculateAppreciation( tick );
         return value.toFixed( 2 ) + '%';
     }
@@ -36,9 +32,6 @@ class PriceChecker {
      * @param {number} value 
      */
     _calculateAppreciation ( value ) {
-        /**
-         * 
-         */
         return ((value - this.trade.price) / this.trade.price) * 100;
     }
 
@@ -46,9 +39,20 @@ class PriceChecker {
      * @returns {string}
      */
     getAppreciation () {
-        let appr = this._calculateAppreciation( this.lastPrice );
-        appr = appr.toFixed( 8 );
-        return  appr;
+        // let appr = this._calculateAppreciation( this.lastPrice );
+        // appr = appr.toFixed( 8 );
+        // return  appr;
+        return (this.lastPrice - this.trade.price).toFixed( 8 );
+    }
+
+    /**
+     * @param {number} close 
+     * @param {number} highestPrice 
+     */
+    calculateDifference ( close, highestPrice ) {
+
+        highestPrice = highestPrice || Math.max.apply( Math, Array.from( this.pricesHistory ) );
+        return 100 - ( close * 100 / highestPrice );
     }
 
     /**
@@ -70,7 +74,7 @@ class PriceChecker {
         
         // bear signal
         if ( close < highestPrice) {
-            let diff = 100 - ( close * 100 / highestPrice );
+            let diff = this.calculateDifference( close, highestPrice );
 
             if ( diff >= this.stopAtPercentage ) {
                 goShort = true;

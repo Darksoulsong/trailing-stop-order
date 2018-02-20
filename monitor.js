@@ -15,10 +15,11 @@ const child = new forever.Monitor( 'index.js', {
 
 eventAggregator.subscribe( 'onConnectionTerminated', ( endpoint ) => {
     child.stop();
+    process.exitCode = 0;
 });
 
 child.on( 'exit', function () {
-    console.log( 'your-filename.js has exited after 1 restarts' );
+    console.log( 'Script terminated.' );
 });
 
 child.start();
