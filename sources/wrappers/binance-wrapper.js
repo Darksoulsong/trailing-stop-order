@@ -1,9 +1,13 @@
-const binance = require( 'node-binance-api' );
-const format = require( 'date-fns/format' );
-const config = require( './../../config' ).binance;
-const eventAggregator = require( './../event-aggregator' ).getInstance();
-const logger = require( './../logger' );
-const Wrapper = require( './wrapper' );
+// const binance = require( 'node-binance-api' );
+// const format = require( 'date-fns/format' );
+// const config = require( './../../config' ).binance;
+// const eventAggregator = require( './../event-aggregator' ).getInstance();
+// const logger = require( './../logger' );
+// const Wrapper = require( './wrapper' );
+
+import binance from 'node-binance-api';
+
+
 
 class BinanceWrapper extends Wrapper {
     /**
