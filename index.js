@@ -1,5 +1,6 @@
 // @TODO: Create param checking:
 // - "-p" format (PAIR=buyPrice)
+// @TODO: Get the wrapper based on the params passed
 // @TODO: Create option to place multiple TSOs
 // - pass multiple pairs --done
 // - pass multiple buyPrices --done

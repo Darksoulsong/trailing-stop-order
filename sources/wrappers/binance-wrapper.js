@@ -13,10 +13,7 @@ class BinanceWrapper extends Wrapper {
     constructor ( pairs, interval ) {
         super();
 
-        this.pairs = pairs;
         this.tickerFn = binance.websockets.candlesticks;
-        this.tickerFnParams = [ pairs, interval ];
-
         binance.options( config );
     }
 
@@ -29,12 +26,14 @@ class BinanceWrapper extends Wrapper {
         });
     }
 
-    terminateConnection () {
+    terminateConnection ( subscription ) {
 
         let endpoints = binance.websockets.subscriptions();
 
         for ( let endpoint in endpoints ) {
-            binance.websockets.terminate( endpoint );            
+            if ( subscription === endpoint ) {
+                binance.websockets.terminate( subscription );
+            }
         }
 
         if ( Object.keys( endpoints ).length === 0 ) {

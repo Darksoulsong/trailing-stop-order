@@ -5,27 +5,25 @@ const eventAggregator = require( './../event-aggregator' ).getInstance();
 class Wrapper {
 
     constructor () {
-        this.tickerFnParams = [];
         this.tickerFn = null;
 
-        /** @type {string[]} */
-        this.pairs = null;
+        this.subscriptions = new Map();        
+    }
 
-        this.subscriptions = null;
+    getSubscription ( pair ) {
+        return this.subscriptions.get( pair );
     }
 
     /**
+     * @param { string } pair
      * @param {{ [pair: string]: { lossTolerance: number, buyPrice: number } }} paramsByPair 
      */
-    placeTrailingStopOrder ( paramsByPair ) {
-        const priceCheckers = {};
+    placeTrailingStopOrder ( pair, interval, paramsByPair ) {
 
-        this.pairs.forEach( ( pair ) => {
-            let trade = { price: paramsByPair[ pair ].buyPrice };
-            let lossTolerance = paramsByPair[ pair ].lossTolerance;
-
-            priceCheckers[ pair ] = new PriceChecker( trade, lossTolerance );
-        });
+        const paramByPair = paramsByPair[ pair ];
+        const trade = { price: paramByPair.buyPrice };
+        const lossTolerance = paramByPair.lossTolerance;
+        const priceChecker = new PriceChecker( trade, lossTolerance );
 
         const onTick = ( candlesticks ) => {
 
@@ -44,8 +42,6 @@ class Wrapper {
                 V: buyVolume, 
                 Q: quoteBuyVolume 
             } = ticks;
-            const trade = { price: paramsByPair[ symbol ].buyPrice };
-            const priceChecker = priceCheckers[ symbol ];
 
             close = +close;
 
@@ -83,9 +79,7 @@ class Wrapper {
             }
         };
 
-        this.tickerFnParams.push( onTick );
-
-        this.subscriptions = this.tickerFn.apply( this.tickerFn, this.tickerFnParams );
+        this.subscriptions.set( pair, this.tickerFn.apply( this.tickerFn, [ pair, interval, onTick ] ) );
     }
 }
 
