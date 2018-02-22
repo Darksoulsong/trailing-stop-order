@@ -1,14 +1,9 @@
-// const config = require( './../config' );
-// const logger = require( './logger' );
-// const PushBullet = require( 'pushbullet' );
-// const handlebars = require( 'handlebars' );
-// const fs = require( 'fs' );
-
 import config from './../config';
 import logger from './logger';
 import PushBullet from 'pushbullet';
 import handlebars from 'handlebars';
-import fs from 'fs';
+import * as fs from 'fs';
+// import fs  = require( 'fs' );
 
 class Reporter {
     successTplSource: string;
@@ -20,15 +15,7 @@ class Reporter {
 
         this.logTplSource = null;
 
-        this.preparePushBullet();
-    }
-
-    preparePushBullet () {
-        this.pushBulletPusher = new PushBullet( config.reporter.pushBullet.APIKEY );
-        this.pushBulletDevice = config.reporter.pushBullet.deviceIden;
-        // this.pushBulletPusher.devices(function (err, resp) { 
-        //     console.log( resp.devices );
-        // });
+        this._preparePushBullet();
     }
 
     async report ( type: string, data: App.sources.TTickerDataReport ) {
@@ -66,18 +53,11 @@ class Reporter {
 
     }
 
-    /**
-     * @param {{close: number, appreciation: number, appreciationPercent: string, date: string, tradePrice: number, pair: string, differenceFromHighestPrice: number}} params 
-     */
-    sellReport ( params ) {
+    sellReport ( params: App.sources.TTickerSellDataReport ) {
         let msg;
         let template;        
 
-        /**
-         * @param {*} error 
-         * @param {string} source 
-         */
-        let compile = ( error, source, resolve, reject ) => {
+        let compile = ( error, source: string, resolve, reject ) => {
 
             if ( error ) {
                 throw new Error( error );
@@ -114,15 +94,22 @@ class Reporter {
         });
 
     }
+
+    private _preparePushBullet () {
+        this.pushBulletPusher = new PushBullet( config.reporter.pushBullet.APIKEY );
+        this.pushBulletDevice = config.reporter.pushBullet.deviceIden;
+        // this.pushBulletPusher.devices(function (err, resp) { 
+        //     console.log( resp.devices );
+        // });
+    }
 }
 
-let instance = null;
-module.exports = {
-    /**
-     * @returns {Reporter}
-     */
-    getInstance () {
+let instance: Reporter = null;
+const obj = {
+    getInstance (): Reporter {
         instance = instance || new Reporter();
         return instance;
     }
 };
+
+export default obj;
