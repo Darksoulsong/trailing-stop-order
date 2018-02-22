@@ -1,4 +1,5 @@
 class EventAggregator {
+    events: Map<string, ( data ) => void>
     constructor () {
         this.events = new Map();
     }
@@ -6,8 +7,7 @@ class EventAggregator {
     publish ( eventName, data ) {
         if ( !this.events.has( eventName ) ) { return; }
 
-        const callback = this.events.get( eventName );
-        callback( data );
+        this.events.get( eventName )( data );
     }
 
     subscribe ( eventName, callback ) {
@@ -23,12 +23,10 @@ class EventAggregator {
     }
 }
 
-let instance = null;
+let instance: EventAggregator = null;
 const obj = {
-    /**
-     * @returns {EventAggregator}
-     */
-    getInstance () {
+
+    getInstance (): EventAggregator {
         instance = instance || new EventAggregator();
         return instance;
     }

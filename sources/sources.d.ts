@@ -17,4 +17,20 @@ declare namespace App.sources {
         date: string, 
         differenceFromHighestPrice: number
     };
+
+    type TTickerSellDataReport = {
+        close: number, 
+        appreciation: number, 
+        appreciationPercent: string, 
+        date: string, 
+        tradePrice: number, 
+        pair: string, 
+        differenceFromHighestPrice: number
+    };
+
+    interface ILogger {
+        info(msg: string): void;
+        error(msg: string): void;
+        success(msg: string): void
+    }
 }

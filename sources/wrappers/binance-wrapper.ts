@@ -14,7 +14,7 @@ export default class BinanceWrapper extends Wrapper {
         this.tickerFn = binance.websockets.candlesticks;
         // this.tickerFnParams = [ pairs, interval ];
 
-        binance.options( config );
+        binance.options( binanceConfig );
     }
 
     // getBalances ( callback: ( ) => void ) {
