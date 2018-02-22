@@ -14,7 +14,7 @@ async function onTickReportSell ( params ) {
     await reporter.report( 'sell', params );
 
     if ( params.terminateConnection ) {
-        binanceWrapper.terminateConnection();
+        binanceWrapper.terminateConnection( binanceWrapper.getSubscription( params.pair ) );
     }
 }
 
@@ -36,7 +36,7 @@ function getPairs ( params ) {
 
 /**
  * @param {{ pair: string, buyPrice: number, lossTolerance: number }[]} params 
- * @returns { {pair: string}[] }
+ * @returns {{ [pair: string]: { buyPrice: number, lossTolerance: number } }}
  */
 function getParams ( params ) {
     let obj = {};
@@ -56,10 +56,17 @@ function getParams ( params ) {
  * @param {{ pair: string, buyPrice: number, lossTolerance: number }[]} params 
  */
 module.exports = function start ( interval, params ) {
-    binanceWrapper = new BinanceWrapper( getPairs( params ), interval );
+    const pairs = getPairs( params );
+
+    binanceWrapper = new BinanceWrapper();
 
     eventAggregator.subscribe( 'onTickReportSell', onTickReportSell );
     eventAggregator.subscribe( 'onTickReportAppreciation', onTickReportAppreciation );
 
-    binanceWrapper.placeTrailingStopOrder( getParams( params ) );
+    let theParams = getParams( params );
+
+    pairs.forEach( ( pair ) => {
+        binanceWrapper.placeTrailingStopOrder( pair, interval, theParams );
+    });
+    
 };
