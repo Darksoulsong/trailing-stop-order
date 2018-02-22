@@ -6,14 +6,14 @@ const eventAggregator = EventAggregator.getInstance();
 
 export default class Wrapper implements App.wrappers.IWrapper {
     tickerFn;
-    subscription: string;
+    subscriptions: Map<string, string>;
 
     constructor () {
         this.tickerFn = null;
-        this.subscription = null;
+        this.subscriptions = new Map();        
     }
 
-    placeTrailingStopOrder ( pair: string, interval: number, paramsByPair: App.wrappers.TParamsByPair ) {
+    placeTrailingStopOrder ( pair: string, interval: string, paramsByPair: App.wrappers.TParamsByPair ) {
         const priceCheckers = {};
 
         let trade = { price: paramsByPair[ pair ].buyPrice };
@@ -38,7 +38,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
                 V: buyVolume, 
                 Q: quoteBuyVolume 
             } = ticks;
-            const trade = { price: paramsByPair[ symbol ].buyPrice };
+            const tradePrice = paramsByPair[ symbol ].buyPrice;
             const priceChecker = priceCheckers[ symbol ];
 
             close = +close;
@@ -58,7 +58,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
                     appreciation, 
                     appreciationPercent, 
                     terminateConnection: true,
-                    trade,
+                    tradePrice,
                     pair,
                     differenceFromHighestPrice
                 });
@@ -77,6 +77,6 @@ export default class Wrapper implements App.wrappers.IWrapper {
             }
         };
 
-        this.subscription = this.tickerFn( [ pair ], interval, onTick );
+        this.subscriptions.set( pair, this.tickerFn.apply( this.tickerFn, [ pair, interval, onTick ] ) );
     }
 }

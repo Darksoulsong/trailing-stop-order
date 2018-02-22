@@ -7,14 +7,15 @@ const binanceConfig = config.binance;
 const eventAggregator = EventAggregator.getInstance();
 
 export default class BinanceWrapper extends Wrapper {
-    constructor ( pairs: string[], interval: string ) {
+    constructor () {
         super();
 
-        // this.pairs = pairs;
         this.tickerFn = binance.websockets.candlesticks;
-        // this.tickerFnParams = [ pairs, interval ];
+        binance.options( config );
+    }
 
-        binance.options( binanceConfig );
+    getSubscription ( pair ) {
+        return this.subscriptions.get( pair );
     }
 
     // getBalances ( callback: ( ) => void ) {
@@ -26,15 +27,17 @@ export default class BinanceWrapper extends Wrapper {
     //     });
     // }
 
-    terminateConnection () {
+    terminateConnection ( subscription: string ) {
 
         let endpoints = binance.websockets.subscriptions();
 
         for ( let endpoint in endpoints ) {
-            binance.websockets.terminate( endpoint );            
+            if ( subscription === endpoint ) {
+                binance.websockets.terminate( subscription );
+            }
         }
 
-        if ( Object.keys( endpoints ).length === 0 ) {
+        if ( !endpoints || Object.keys( endpoints ).length === 0 ) {
             eventAggregator.publish( 'onConnectionTerminated', null );
         }
     }

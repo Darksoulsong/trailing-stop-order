@@ -25,8 +25,15 @@ declare namespace App.sources {
         date: string, 
         tradePrice: number, 
         pair: string, 
+        terminateConnection: boolean,
         differenceFromHighestPrice: number
     };
+
+    type TStartParams = {
+        pair: string, 
+        buyPrice: number, 
+        lossTolerance: number
+    }
 
     interface ILogger {
         info(msg: string): void;
