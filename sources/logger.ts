@@ -1,5 +1,3 @@
-// const winston = require('winston');
-// const winstonRotator = require('winston-daily-rotate-file');
 import { transports, Logger } from 'winston';
 import winstonRotator from 'winston-daily-rotate-file';
 
