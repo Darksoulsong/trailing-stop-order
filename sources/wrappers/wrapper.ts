@@ -13,6 +13,14 @@ export default class Wrapper implements App.wrappers.IWrapper {
         this.subscriptions = new Map();        
     }
 
+    terminateConnection ( subscription: string ) {
+        throw 'Not Implemented!';
+    }
+
+    getSubscription ( pair: string ) {
+        throw 'Not Implemented!';
+    }
+
     placeTrailingStopOrder ( pair: string, interval: string, paramsByPair: App.wrappers.TParamsByPair ) {
         const priceCheckers = {};
 

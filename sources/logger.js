@@ -1,63 +1,47 @@
-const winston = require('winston');
-const winstonRotator = require('winston-daily-rotate-file');
-
-const datePattern = "dd-MM-yyyy-";
-const logsDir = 'logs/';
-const consoleConfig = [
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+// import { winston, transports, Logger } from 'winston';
+var winston = require("winston");
+var winstonRotator = require("winston-daily-rotate-file");
+var datePattern = "dd-MM-yyyy-";
+var logsDir = 'logs/';
+var consoleConfig = [
     new winston.transports.Console({
         'colorize': true
     })
 ];
-
-/**
- * @param {string} type
- */
-function createLogger ( type ) {
-
-    const loggerInstance = new winston.Logger({
+function createLogger(type) {
+    var loggerInstance = new winston.Logger({
         'transports': consoleConfig
     });
-
-    const typeToLevel = {
+    var typeToLevel = {
         'info': 'info',
         'error': 'error',
         'success': 'info'
     };
-
-    loggerInstance.add( winstonRotator, {
-        'name': `${ typeToLevel[ type ] }-file`,
-        'level': `${ typeToLevel[ type ] }`,
-        'filename': `${ logsDir }report-${ type }.log`,
+    loggerInstance.add(winstonRotator, {
+        'name': typeToLevel[type] + "-file",
+        'level': "" + typeToLevel[type],
+        'filename': logsDir + "report-" + type + ".log",
         'json': false,
         'datePattern': datePattern,
         'prepend': true
     });
-
     return loggerInstance;
 }
-
-const logger = {
-    /**
-     * @param {string} msg 
-     */
-    info ( msg ) {
-        createLogger( 'info' ).info( msg );
+var infoLogger = createLogger('info');
+var errorLogger = createLogger('error');
+var successLogger = createLogger('success');
+var logger = {
+    info: function (msg) {
+        infoLogger.info(msg);
     },
-
-    /**
-     * @param {string} msg 
-     */
-    error ( msg ) {
-        createLogger( 'error' ).error( msg );
-        errorLogger.error( msg );
+    error: function (msg) {
+        errorLogger.error(msg);
     },
-
-    /**
-     * @param {string} msg 
-     */
-    success ( msg ) {
-        createLogger( 'success' ).info( msg );
+    success: function (msg) {
+        successLogger.info(msg);
     }
 };
-
-module.exports = logger;
+exports.default = logger;
+//# sourceMappingURL=logger.js.map

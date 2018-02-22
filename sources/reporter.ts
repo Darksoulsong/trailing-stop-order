@@ -1,7 +1,7 @@
 import config from './../config';
 import logger from './logger';
-import PushBullet from 'pushbullet';
-import handlebars from 'handlebars';
+import * as PushBullet from 'pushbullet';
+import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 // import fs  = require( 'fs' );
 

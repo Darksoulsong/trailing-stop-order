@@ -1,16 +1,17 @@
-import { transports, Logger } from 'winston';
-import winstonRotator from 'winston-daily-rotate-file';
+// import { winston, transports, Logger } from 'winston';
+import * as winston from 'winston';
+import * as winstonRotator from 'winston-daily-rotate-file';
 
 const datePattern = "dd-MM-yyyy-";
 const logsDir = 'logs/';
 const consoleConfig = [
-    new transports.Console({
+    new winston.transports.Console({
         'colorize': true
     })
 ];
 
 function createLogger ( type: string ) {
-    const loggerInstance = new Logger({
+    const loggerInstance = new winston.Logger({
         'transports': consoleConfig
     });
 
@@ -52,4 +53,4 @@ const logger = {
     }
 };
 
-export default logger;
+export default logger; 

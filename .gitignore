@@ -65,3 +65,4 @@ typings/
 config.js
 cmd.txt
 package-lock.json
+*.map

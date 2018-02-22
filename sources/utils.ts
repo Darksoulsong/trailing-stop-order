@@ -27,12 +27,15 @@ export default {
         //     "p=DASHBTC-b=0.068408-i=15m-l=0.2",
         //     "p=LTCBTC-b=0.008408-i=30m-l=0.2"
         // ]
-    
+
         let params = [];
         let interval = null;
+        let idx = args.findIndex( ( element, index ) => {
+            return element.indexOf( 'i=' ) !== -1;
+        });
     
-        if ( args.includes( 'i=' ) ) {
-            interval = args.splice( args.indexOf( 'i=' ), 1 );
+        if ( idx !== -1 ) {
+            interval = args.splice( idx, 1 )[ 0 ];
         }
     
         args.forEach( ( arg: string ) => {
@@ -68,5 +71,9 @@ export default {
             interval,
             params
         };
+    },
+
+    getWrapper ( name: string ) {
+        return require( `./wrappers/${name}-wrapper` ).default;
     }
 }

@@ -1,4 +1,4 @@
-import binance from 'node-binance-api';
+import * as binance from 'node-binance-api';
 import config from './../../config';
 import EventAggregator from './../event-aggregator';
 import Wrapper from './wrapper';
@@ -11,7 +11,7 @@ export default class BinanceWrapper extends Wrapper {
         super();
 
         this.tickerFn = binance.websockets.candlesticks;
-        binance.options( config );
+        binance.options( binanceConfig );
     }
 
     getSubscription ( pair ) {
