@@ -23,8 +23,6 @@ class Reporter {
     }
 
     appreciationReport ( params: App.sources.TTickerApreciationDataReport ) {
-        let template;
-        let msg;
 
         let compile = ( error, source, resolve ) => {
             if ( error ) {
@@ -53,9 +51,7 @@ class Reporter {
 
     }
 
-    sellReport ( params: App.sources.TTickerSellDataReport ) {
-        let msg;
-        let template;        
+    sellReport ( params: App.sources.TTickerSellDataReport ) {      
 
         let compile = ( error, source: string, resolve, reject ) => {
 
@@ -63,12 +59,15 @@ class Reporter {
                 throw new Error( error );
             }
 
-            template = handlebars.compile( source );
-            msg = template( params );
+            let template = handlebars.compile( source );
+            let msg = template( params );
 
             logger.success( msg );
 
-            this.pushBulletPusher.note( this.pushBulletDevice, "Trailing stop order fulfilled", msg, ( error, response ) => {
+            this.pushBulletPusher.note( this.pushBulletDevice, 
+                "Trailing stop order fulfilled", 
+                msg, 
+                ( error, response ) => {
                 if ( error ) {
                     let errorMsg = `An error has occurred on trying to push a note to PushBullet. Details: ${ error }`;
                     logger.error( errorMsg );

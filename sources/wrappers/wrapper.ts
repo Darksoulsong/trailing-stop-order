@@ -1,4 +1,4 @@
-import format from 'date-fns/format';
+import * as format from 'date-fns/format';
 import PriceChecker from './../price-checker';
 import EventAggregator from './../event-aggregator';
 
@@ -31,20 +31,25 @@ export default class Wrapper implements App.wrappers.IWrapper {
 
         const onTick = ( candlesticks ) => {
 
-            let { e: eventType, E: eventTime, s: symbol, k: ticks } = candlesticks;
+            let { 
+                // e: eventType, 
+                E: eventTime, 
+                s: symbol, 
+                k: ticks 
+            } = candlesticks;
             let date = format( new Date( eventTime ), "D/MM/YYYY - HH:mm:ss" );
             let { 
-                o: open, 
-                h: high, 
-                l: low, 
+                // o: open, 
+                // h: high, 
+                // l: low, 
                 c: close, 
-                v: volume, 
-                n: trades, 
-                i: interval, 
-                x: isFinal, 
-                q: quoteVolume, 
-                V: buyVolume, 
-                Q: quoteBuyVolume 
+                // v: volume, 
+                // n: trades, 
+                // i: interval, 
+                // x: isFinal, 
+                // q: quoteVolume, 
+                // V: buyVolume, 
+                // Q: quoteBuyVolume 
             } = ticks;
             const tradePrice = paramsByPair[ symbol ].buyPrice;
             const priceChecker = priceCheckers[ symbol ];

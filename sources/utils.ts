@@ -23,19 +23,28 @@ export default {
 
     getArgs ( args: string[] ) {
         // [ 
+        //     "e=binance",
         //     "i=30m",
         //     "p=DASHBTC-b=0.068408-i=15m-l=0.2",
         //     "p=LTCBTC-b=0.008408-i=30m-l=0.2"
         // ]
 
         let params = [];
-        let interval = null;
-        let idx = args.findIndex( ( element, index ) => {
+        let interval: string = null;
+        let exchange: string = null;
+        let iIndex = args.findIndex( ( element ) => {
             return element.indexOf( 'i=' ) !== -1;
         });
+        let eIndex = args.findIndex( ( element ) => {
+            return element.indexOf( 'e=' ) !== -1;
+        });
     
-        if ( idx !== -1 ) {
-            interval = args.splice( idx, 1 )[ 0 ];
+        if ( iIndex !== -1 ) {
+            interval = args.splice( iIndex, 1 )[ 0 ].split( '=' )[ 1 ];
+        }
+
+        if ( eIndex !== -1 ) {
+            exchange = args.splice( eIndex, 1 )[ 0 ].split( '=' )[ 1 ];
         }
     
         args.forEach( ( arg: string ) => {
@@ -68,6 +77,7 @@ export default {
         });
     
         return {
+            exchange,
             interval,
             params
         };

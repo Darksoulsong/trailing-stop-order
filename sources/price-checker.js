@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var PriceChecker = /** @class */ (function () {
+var PriceChecker = (function () {
     function PriceChecker(_trade, _stopAtPercentage) {
         this._trade = _trade;
         this._stopAtPercentage = _stopAtPercentage;

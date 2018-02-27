@@ -8,7 +8,7 @@ export default class PriceChecker {
         this.lastPrice = null;
     }
 
-    getAppreciationPercent ( tick: string ) {
+    getAppreciationPercent ( tick: number ) {
         if ( !this.lastPrice ) { return 0; }
 
         let value = this._calculateAppreciation( tick );

@@ -41,7 +41,7 @@ var PushBullet = require("pushbullet");
 var handlebars = require("handlebars");
 var fs = require("fs");
 // import fs  = require( 'fs' );
-var Reporter = /** @class */ (function () {
+var Reporter = (function () {
     function Reporter() {
         this.successTplSource = null;
         this.logTplSource = null;
@@ -59,8 +59,6 @@ var Reporter = /** @class */ (function () {
     };
     Reporter.prototype.appreciationReport = function (params) {
         var _this = this;
-        var template;
-        var msg;
         var compile = function (error, source, resolve) {
             if (error) {
                 throw new Error(error);
@@ -83,14 +81,12 @@ var Reporter = /** @class */ (function () {
     };
     Reporter.prototype.sellReport = function (params) {
         var _this = this;
-        var msg;
-        var template;
         var compile = function (error, source, resolve, reject) {
             if (error) {
                 throw new Error(error);
             }
-            template = handlebars.compile(source);
-            msg = template(params);
+            var template = handlebars.compile(source);
+            var msg = template(params);
             logger_1.default.success(msg);
             _this.pushBulletPusher.note(_this.pushBulletDevice, "Trailing stop order fulfilled", msg, function (error, response) {
                 if (error) {

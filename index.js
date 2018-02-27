@@ -6,7 +6,6 @@
 // - PushBullet --done.
 // - Email
 Object.defineProperty(exports, "__esModule", { value: true });
-// -b, -p, -t, -i
 var minimist = require("minimist");
 var main_1 = require("./main");
 var event_aggregator_1 = require("./sources/event-aggregator");
@@ -18,6 +17,6 @@ eventAggregator.subscribe('onConnectionTerminated', function () {
     process.exit();
 });
 var args = utils_1.default.getArgs(argv._);
-var Wrapper = utils_1.default.getWrapper('binance');
+var Wrapper = utils_1.default.getWrapper(args.exchange);
 main_1.default(args.interval, args.params, Wrapper);
 //# sourceMappingURL=index.js.map

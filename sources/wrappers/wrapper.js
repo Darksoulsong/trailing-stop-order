@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var format_1 = require("date-fns/format");
+var format = require("date-fns/format");
 var price_checker_1 = require("./../price-checker");
 var event_aggregator_1 = require("./../event-aggregator");
 var eventAggregator = event_aggregator_1.default.getInstance();
-var Wrapper = /** @class */ (function () {
+var Wrapper = (function () {
     function Wrapper() {
         this.tickerFn = null;
         this.subscriptions = new Map();
@@ -21,9 +21,15 @@ var Wrapper = /** @class */ (function () {
         var lossTolerance = paramsByPair[pair].lossTolerance;
         priceCheckers[pair] = new price_checker_1.default(trade, lossTolerance);
         var onTick = function (candlesticks) {
-            var eventType = candlesticks.e, eventTime = candlesticks.E, symbol = candlesticks.s, ticks = candlesticks.k;
-            var date = format_1.default(new Date(eventTime), "D/MM/YYYY - HH:mm:ss");
-            var open = ticks.o, high = ticks.h, low = ticks.l, close = ticks.c, volume = ticks.v, trades = ticks.n, interval = ticks.i, isFinal = ticks.x, quoteVolume = ticks.q, buyVolume = ticks.V, quoteBuyVolume = ticks.Q;
+            var 
+            // e: eventType, 
+            eventTime = candlesticks.E, symbol = candlesticks.s, ticks = candlesticks.k;
+            var date = format(new Date(eventTime), "D/MM/YYYY - HH:mm:ss");
+            var 
+            // o: open, 
+            // h: high, 
+            // l: low, 
+            close = ticks.c;
             var tradePrice = paramsByPair[symbol].buyPrice;
             var priceChecker = priceCheckers[symbol];
             close = +close;

@@ -19,17 +19,25 @@ exports.default = {
     },
     getArgs: function (args) {
         // [ 
+        //     "e=binance",
         //     "i=30m",
         //     "p=DASHBTC-b=0.068408-i=15m-l=0.2",
         //     "p=LTCBTC-b=0.008408-i=30m-l=0.2"
         // ]
         var params = [];
         var interval = null;
-        var idx = args.findIndex(function (element, index) {
+        var exchange = null;
+        var iIndex = args.findIndex(function (element) {
             return element.indexOf('i=') !== -1;
         });
-        if (idx !== -1) {
-            interval = args.splice(idx, 1)[0];
+        var eIndex = args.findIndex(function (element) {
+            return element.indexOf('e=') !== -1;
+        });
+        if (iIndex !== -1) {
+            interval = args.splice(iIndex, 1)[0].split('=')[1];
+        }
+        if (eIndex !== -1) {
+            exchange = args.splice(eIndex, 1)[0].split('=')[1];
         }
         args.forEach(function (arg) {
             var obj = {
@@ -58,6 +66,7 @@ exports.default = {
             params.push(obj);
         });
         return {
+            exchange: exchange,
             interval: interval,
             params: params
         };

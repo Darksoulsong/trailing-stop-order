@@ -16,7 +16,7 @@ var event_aggregator_1 = require("./../event-aggregator");
 var wrapper_1 = require("./wrapper");
 var binanceConfig = config_1.default.binance;
 var eventAggregator = event_aggregator_1.default.getInstance();
-var BinanceWrapper = /** @class */ (function (_super) {
+var BinanceWrapper = (function (_super) {
     __extends(BinanceWrapper, _super);
     function BinanceWrapper() {
         var _this = _super.call(this) || this;

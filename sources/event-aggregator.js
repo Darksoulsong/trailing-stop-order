@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var EventAggregator = /** @class */ (function () {
+var EventAggregator = (function () {
     function EventAggregator() {
         this.events = new Map();
     }

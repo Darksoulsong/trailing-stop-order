@@ -5,7 +5,6 @@
 // - PushBullet --done.
 // - Email
 
-// -b, -p, -t, -i
 import * as minimist from 'minimist';
 import start from './main';
 import EventAggregator from './sources/event-aggregator';
@@ -21,6 +20,6 @@ eventAggregator.subscribe( 'onConnectionTerminated', () => {
 });
 
 const args = utils.getArgs( argv._ );
-const Wrapper = utils.getWrapper( 'binance' );
+const Wrapper = utils.getWrapper( args.exchange );
 
 start( args.interval, args.params, Wrapper );
