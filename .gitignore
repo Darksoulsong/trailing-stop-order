@@ -62,9 +62,9 @@ typings/
 .next
 
 .vscode/
-config.ts
 cmd.txt
 *.map
 package-lock.json
 *.js
 jsconfig.json
+config.ts
