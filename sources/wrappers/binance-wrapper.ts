@@ -18,14 +18,41 @@ export default class BinanceWrapper extends Wrapper {
         return this.subscriptions.get( pair );
     }
 
-    // getBalances ( callback: ( ) => void ) {
-    //     binance.balance( ( error, balances ) => {
-    //         if ( error ) {
-    //             throw new Error( error );
-    //         }
-    //         callback( balances[ this.pairs ] );
-    //     });
-    // }
+    async sell ( pair: string, quantity: number, price: number ) {
+
+        function doSell () {
+            return new Promise( ( resolve, reject ) => {
+                binance.sell( pair, quantity, price, { type:'LIMIT' }, 
+                    ( error, response ) => {
+                        if ( error ) { reject( error ) }
+
+                        resolve( response );
+                    }
+                );
+            });
+        }
+
+        return await doSell();
+    }
+
+    async getBalances ( pair: string ) {
+        function get () {
+            return new Promise( ( resolve, reject ) => {
+                binance.balance( ( error, balances ) => {
+                    if ( error ) { reject( error ); }
+                    resolve( balances );
+                });
+            });
+        }
+
+        async function doGetBalances () {
+            return await get();
+        }
+
+        const balance = await doGetBalances();
+
+        return balance[ pair ];
+    }
 
     terminateConnection ( subscription: string ) {
 

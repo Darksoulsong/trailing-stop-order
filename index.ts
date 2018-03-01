@@ -1,8 +1,4 @@
-// @TODO: Create param checking:
-// - "-p" format (PAIR=buyPrice)
-// @TODO: Get the wrapper based on the params passed
 // @TODO: Create reporter
-// - PushBullet --done.
 // - Email
 
 import * as minimist from 'minimist';

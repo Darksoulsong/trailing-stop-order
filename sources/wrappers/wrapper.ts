@@ -14,11 +14,19 @@ export default class Wrapper implements App.wrappers.IWrapper {
         this.subscriptions = new Map();        
     }
 
+    async sell ( pair: string, quantity: number, price: number ) {
+        throw 'Not Implemented!';
+    }
+
     terminateConnection ( subscription: string ) {
         throw 'Not Implemented!';
     }
 
     getSubscription ( pair: string ) {
+        throw 'Not Implemented!';
+    }
+
+    getBalances () {
         throw 'Not Implemented!';
     }
 
@@ -66,6 +74,8 @@ export default class Wrapper implements App.wrappers.IWrapper {
             priceChecker.setLastPrice( close );
 
             if ( priceChecker.shouldSell( close ) ) {
+
+                const sellResponse = this.sell( pair, , close );
 
                 eventAggregator.publish( 'onTickReportSell', { 
                     close, 
