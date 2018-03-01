@@ -9,13 +9,14 @@ A Javascript implementation to a trailing stop order for Binance Exchange. This 
 - Add a `./config.js` file and configure it using the `./config.sample.js` as example.
 
 ## Running it: 
-- Single
-    npm run start -- "e=exchange" "i=30m" "p=DASHBTC-b=0.068408-l=0.2"
+- Placing a single trailing stop order
+
+        npm run start -- "e=exchange" "i=30m" "p=DASHBTC-b=0.068408-l=0.2"
 
 
-- Multiple pairs
+- Placing multiple trailing stop orders
 
-    npm run start -- "e=exchange" "i=30m" "p=DASHBTC-b=0.068408-l=0.2" "p=LTCBTC-b=0.008408-l=0.2"
+        npm run start -- "e=exchange" "i=30m" "p=DASHBTC-b=0.068408-l=0.2" "p=LTCBTC-b=0.008408-l=0.2"
 
 Where:
  - **b** is the asset's buy price (*required*)
