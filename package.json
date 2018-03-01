@@ -2,10 +2,10 @@
   "name": "trailing-stop-order",
   "version": "0.0.1",
   "description": "Implements a trailing stop order for cryptocurrencies",
-  "main": "script.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js",
-    "monitor": "node monitor.js",
+    "start": "ts-node index.ts",
+    "monitor": "ts-node monitor.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,6 +32,8 @@
     "node-binance-api": "^0.4.17",
     "pushbullet": "^2.1.0",
     "request-promise": "^4.2.2",
+    "ts-node": "^5.0.0",
+    "typescript": "^2.7.2",
     "winston": "^2.4.0",
     "winston-daily-rotate-file": "^1.7.2"
   },

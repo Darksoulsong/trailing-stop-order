@@ -18,7 +18,6 @@ export default {
                 throw new Error( 'Required params missing. Check "p" (pair), "b" (buyPrice), "l" (loss tolerance)' );
             }
         });
-
     },
 
     getArgs ( args: string[] ) {
@@ -30,8 +29,8 @@ export default {
         // ]
 
         let params = [];
-        let interval: string = null;
-        let exchange: string = null;
+        let interval = "30m";
+        let exchange = "binance";
         let iIndex = args.findIndex( ( element ) => {
             return element.indexOf( 'i=' ) !== -1;
         });

@@ -1,6 +1,7 @@
 import * as format from 'date-fns/format';
 import PriceChecker from './../price-checker';
 import EventAggregator from './../event-aggregator';
+import config from './../../config';
 
 const eventAggregator = EventAggregator.getInstance();
 
@@ -60,6 +61,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
             const appreciationPercent = priceChecker.getAppreciationPercent( close );
             const pair = symbol;
             const differenceFromHighestPrice = -priceChecker.calculateDifference( close ).toFixed( 2 );
+            const terminateConnection = config.testMode ? false : true;
 
             priceChecker.setLastPrice( close );
 
@@ -70,7 +72,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
                     date, 
                     appreciation, 
                     appreciationPercent, 
-                    terminateConnection: true,
+                    terminateConnection,
                     tradePrice,
                     pair,
                     differenceFromHighestPrice

@@ -1,4 +1,5 @@
 const config = {
+    testMode: false,
     binance: {
         APIKEY:         '',
         APISECRET:      '',
