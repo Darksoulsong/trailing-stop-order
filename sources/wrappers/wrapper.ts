@@ -61,7 +61,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
             const appreciationPercent = priceChecker.getAppreciationPercent( close );
             const pair = symbol;
             const differenceFromHighestPrice = -priceChecker.calculateDifference( close ).toFixed( 2 );
-            const terminateConnection = config.testMode ? false : true;
+            const terminateConnection = config[ 'testMode' ] ? false : true;
 
             priceChecker.setLastPrice( close );
 
