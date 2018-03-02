@@ -9,6 +9,7 @@ declare namespace App.wrappers {
         getSubscription ( pair: string );
         sell ( pair: string, quantity: number, price: number, callback: ( error, response ) => void );
         getBalances ( param: any ): any;
+        getData( data ): { close: number, date: number, combination: string }
     }
 
     interface IBinanceWrapper extends IWrapper {

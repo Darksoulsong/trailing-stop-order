@@ -1,4 +1,5 @@
 import * as binance from 'node-binance-api';
+import * as format from 'date-fns/format';
 import config from './../../config';
 import EventAggregator from './../event-aggregator';
 import Wrapper from './wrapper';
@@ -57,6 +58,38 @@ export default class BinanceWrapper extends Wrapper implements App.wrappers.IBin
         return new Promise< App.wrappers.TBinanceBalance >( ( resolve ) => {
             resolve( element );
         });
+    }
+
+    getData ( candlesticks ) {
+
+        let {
+            // e: eventType, 
+            E: eventTime, 
+            s: combination, 
+            k: ticks 
+        } = candlesticks;
+        let date = format( new Date( eventTime ), "D/MM/YYYY - HH:mm:ss" );
+        let {
+            // o: open, 
+            // h: high, 
+            // l: low, 
+            c: close, 
+            // v: volume, 
+            // n: trades, 
+            // i: interval, 
+            // x: isFinal, 
+            // q: quoteVolume, 
+            // V: buyVolume, 
+            // Q: quoteBuyVolume 
+        } = ticks;
+        
+        close = +close;
+
+        return {
+            close,
+            date,
+            combination
+        };
     }
 
     terminateConnection ( subscription: string ) {

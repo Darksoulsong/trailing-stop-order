@@ -22,7 +22,7 @@ export default class PriceChecker {
         return (this.lastPrice - this._trade.price).toFixed( 8 );
     }
 
-    calculateDifference ( close: number, highestPrice: number ) {
+    calculateDifference ( close: number, highestPrice?: number ) {
         highestPrice = highestPrice || Math.max.apply( Math, Array.from( this.pricesHistory ) );
         return 100 - ( close * 100 / highestPrice );
     }
