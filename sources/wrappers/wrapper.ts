@@ -14,7 +14,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
         this.subscriptions = new Map();        
     }
 
-    async sell ( pair: string, quantity: number, price: number ) {
+    sell( pair: string, quantity: number, price: number ): Promise<{}> {
         throw 'Not Implemented!';
     }
 
@@ -26,9 +26,10 @@ export default class Wrapper implements App.wrappers.IWrapper {
         throw 'Not Implemented!';
     }
 
-    getBalances () {
+    getBalances( pair: string ): any {
         throw 'Not Implemented!';
     }
+
 
     placeTrailingStopOrder ( pair: string, interval: string, paramsByPair: App.wrappers.TParamsByPair ) {
         const priceCheckers = {};
@@ -38,7 +39,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
 
         priceCheckers[ pair ] = new PriceChecker( trade, lossTolerance );
 
-        const onTick = ( candlesticks ) => {
+        const onTick = async ( candlesticks ) => {
 
             let { 
                 // e: eventType, 
@@ -75,7 +76,9 @@ export default class Wrapper implements App.wrappers.IWrapper {
 
             if ( priceChecker.shouldSell( close ) ) {
 
-                const sellResponse = this.sell( pair, , close );
+                const balance = await this.getBalances( pair );                
+
+                // const sellResponse = this.sell( pair, balance.available, close );
 
                 eventAggregator.publish( 'onTickReportSell', { 
                     close, 

@@ -6,7 +6,7 @@ import Wrapper from './wrapper';
 const binanceConfig = config.binance;
 const eventAggregator = EventAggregator.getInstance();
 
-export default class BinanceWrapper extends Wrapper {
+export default class BinanceWrapper extends Wrapper implements App.wrappers.IBinanceWrapper {
     constructor () {
         super();
 
@@ -35,9 +35,9 @@ export default class BinanceWrapper extends Wrapper {
         return await doSell();
     }
 
-    async getBalances ( pair: string ) {
+    async getBalances ( pair: string ): Promise< App.wrappers.TBinanceBalance > {
         function get () {
-            return new Promise( ( resolve, reject ) => {
+            return new Promise< App.wrappers.TBinanceBalanceByPair >( ( resolve, reject ) => {
                 binance.balance( ( error, balances ) => {
                     if ( error ) { reject( error ); }
                     resolve( balances );
@@ -50,8 +50,13 @@ export default class BinanceWrapper extends Wrapper {
         }
 
         const balance = await doGetBalances();
+        const element = balance[ pair ];
+        element.available = +element.available;
+        element.onOrder = +element.onOrder;
 
-        return balance[ pair ];
+        return new Promise< App.wrappers.TBinanceBalance >( ( resolve ) => {
+            resolve( element );
+        });
     }
 
     terminateConnection ( subscription: string ) {

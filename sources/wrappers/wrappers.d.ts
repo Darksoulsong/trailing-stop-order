@@ -1,5 +1,8 @@
 declare namespace App.wrappers {
     type TParamsByPair = { [pair: string]: { lossTolerance: number, buyPrice: number } };
+    type TBinanceBalance = { available: number | string, onOrder: number | string };
+    type TBinanceBalanceByPair = { [pair: string]: TBinanceBalance };
+
     interface IWrapper {
         placeTrailingStopOrder ( pair: string, interval: string, paramsByPair: TParamsByPair );
         terminateConnection ( subscription: string );
@@ -11,6 +14,6 @@ declare namespace App.wrappers {
     interface IBinanceWrapper extends IWrapper {
 
         // https://stackoverflow.com/questions/41285211/typescript-overriding-interface-property-type-defined-in-d-ts
-        getBalances( pair: string ): { [pair: string]: { available: number, onOrder: number } };
+        getBalances( pair: string ): Promise< TBinanceBalance >;
     }
 }
