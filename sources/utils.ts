@@ -1,4 +1,52 @@
 export default {
+
+    getSymbol ( pair: string, symbols: { [pair: string]: any } ) {
+        pair = pair.toUpperCase();
+
+        let symbol = null;
+        let pairArr = pair.split( '' );
+        let found;
+
+        loop:        
+        for ( let element in symbols ) {
+            let arr1 = [];
+            let arr2 = [];
+            let symbolToArray = element.split( '' );
+
+            for ( let y = 0; y < symbolToArray.length; y++ ) {
+                let char = symbolToArray[ y ];
+                arr1.push( char );
+                
+                if ( !pairArr[ y ] ) { continue; }
+                
+                arr2[ y ] = pairArr[ y ];
+    
+                if ( arr1.length >= 3 ) {
+                    if ( arr2.join('').indexOf( arr1.join('') ) !== -1 ) {
+    
+                        if ( found ) {
+                            if ( arr1.join( '' ) === arr2.join( '' ) ) {
+                                symbol = element;
+                            } else {
+                                symbol = found;
+                            }
+    
+                            break loop;
+                        }
+    
+                        found = element;
+                    }
+                }
+            }
+        }
+
+        if ( !!found && !symbol ) {
+            symbol = found;
+        }
+        
+        return symbol;
+    },
+
     checkArgs ( args: string[] ) {
     
         args.forEach( ( arg ) => {

@@ -3,6 +3,7 @@ import * as format from 'date-fns/format';
 import config from './../../config';
 import EventAggregator from './../event-aggregator';
 import Wrapper from './wrapper';
+import utils from './../utils';
 
 const binanceConfig = config.binance;
 const eventAggregator = EventAggregator.getInstance();
@@ -50,13 +51,15 @@ export default class BinanceWrapper extends Wrapper implements App.wrappers.IBin
             return await get();
         }
 
-        const balance = await doGetBalances();
-        const element = balance[ pair ];
-        element.available = +element.available;
-        element.onOrder = +element.onOrder;
+        const balances = await doGetBalances();
+        const symbol = utils.getSymbol( pair, balances );
+        const balance = balances[ symbol ];
+
+        balance.available = +balance.available;
+        balance.onOrder = +balance.onOrder;
 
         return new Promise< App.wrappers.TBinanceBalance >( ( resolve ) => {
-            resolve( element );
+            resolve( balance );
         });
     }
 
