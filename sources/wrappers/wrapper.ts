@@ -34,7 +34,7 @@ export default class Wrapper implements App.wrappers.IWrapper {
     };
 
     placeTrailingStopOrder ( pair: string, interval: string, paramsByPair: App.wrappers.TParamsByPair ) {
-        const priceCheckers = {};
+        const priceCheckers: { [pair: string]: PriceChecker } = {};
 
         let trade = { price: paramsByPair[ pair ].buyPrice };
         let lossTolerance = paramsByPair[ pair ].lossTolerance;
